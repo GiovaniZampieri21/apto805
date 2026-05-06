@@ -259,7 +259,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 // Para gerar: abra o console do navegador e rode:
 //   crypto.subtle.digest('SHA-256', new TextEncoder().encode('SUA_SENHA'))
 //     .then(b => console.log([...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('')))
-const SENHA_HASH = 'b94d27b9934d3e08a52e52d7da7dabfac484efe04294e576e4f5c4ed7e2c7b09'; // senha padrão: apto805
+const SENHA_HASH = '9079be1a295947dc1628ee0930de9a652ac750b807acbefa3a77ffb1628f3e71'; // senha padrão: apto805
 
 async function hashStr(str){
   const buf=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(str));
