@@ -553,15 +553,26 @@ function renderChart(){
   const totalAberto=cats.reduce((s,c)=>s+open[c.key],0);
   const totalGeral=totalPago+totalAberto;
 
+  // count open parcels per category
+  const openCount={};
+  cats.forEach(c=>openCount[c.key]=0);
+  payments.forEach(p=>{if(p.status!=='pago'&&openCount[p.tipo]!==undefined)openCount[p.tipo]++;});
+
+  const countLabel={mensal:'parcela',anual:'parcela',pos:'parcela'};
+
   const rows=cats.map(c=>{
     const p=paid[c.key],o=open[c.key],t=p+o;
     if(t===0)return'';
     const pctPago=totalGeral>0?(p/totalGeral*100).toFixed(1):'0.0';
     const pctAberto=totalGeral>0?(o/totalGeral*100).toFixed(1):'0.0';
-    return`<tr>
+    const cnt=openCount[c.key];
+    const cntHtml=countLabel[c.key]&&cnt>0
+      ?`<div style="font-size:10px;color:var(--text3);margin-top:2px">${cnt} ${countLabel[c.key]}${cnt>1?'s':''} a pagar</div>`:'';
+    return`<tr style="border-bottom:0.5px solid var(--border)">
       <td style="padding:8px 10px">
         <div style="font-size:12px;font-weight:500;color:var(--text)">${c.label}</div>
         ${c.desc?`<div style="font-size:11px;color:var(--text2)">${c.desc}</div>`:''}
+        ${cntHtml}
       </td>
       <td style="padding:8px 10px;text-align:right;font-size:12px;color:var(--green-dark);font-weight:500">${p>0?fmtBRL(p):'—'}</td>
       <td style="padding:8px 10px;text-align:right;font-size:11px;color:var(--text2)">${p>0?pctPago+'%':'—'}</td>
