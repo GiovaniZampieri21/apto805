@@ -506,24 +506,28 @@ function renderList(){
 }
 
 function renderChart(){
+  const allYears=[...new Set(payments.map(p=>p.date.getFullYear()))].sort();
   const byYear={},byYearA={};
+  allYears.forEach(y=>{byYear[y]=0;byYearA[y]=0;});
   payments.forEach(p=>{
     const y=p.date.getFullYear();
-    if(!byYear[y]){byYear[y]=0;byYearA[y]=0;}
     if(p.status==='pago')byYear[y]+=p.valor;
     else byYearA[y]+=p.valor;
   });
-  const years=Object.keys(byYear).sort();
+  const maxVal=Math.max(...allYears.map(y=>byYear[y]+byYearA[y]));
   if(chartInst)chartInst.destroy();
   chartInst=new Chart(document.getElementById('yearChart'),{
     type:'bar',
-    data:{labels:years,datasets:[
-      {label:'Pago',data:years.map(y=>Math.round(byYear[y])),backgroundColor:'#5DCAA5',borderRadius:4},
-      {label:'A pagar',data:years.map(y=>Math.round(byYearA[y])),backgroundColor:'#B4B2A9',borderRadius:4}
+    data:{labels:allYears.map(String),datasets:[
+      {label:'Pago',data:allYears.map(y=>Math.round(byYear[y])),backgroundColor:'#5DCAA5',borderRadius:4},
+      {label:'A pagar',data:allYears.map(y=>Math.round(byYearA[y])),backgroundColor:'#B4B2A9',borderRadius:4}
     ]},
     options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},
-      scales:{x:{stacked:true,grid:{display:false},ticks:{font:{size:11}}},
-        y:{stacked:true,ticks:{font:{size:10},callback:v=>'R$'+(v>=1000?(v/1000).toFixed(0)+'k':v)}}}}
+      scales:{
+        x:{stacked:true,grid:{display:false},ticks:{font:{size:11},autoSkip:false}},
+        y:{stacked:true,max:Math.ceil(maxVal*1.1),ticks:{font:{size:10},callback:v=>'R$'+(v>=1000?(v/1000).toFixed(0)+'k':v)}}
+      }
+    }
   });
 }
 
